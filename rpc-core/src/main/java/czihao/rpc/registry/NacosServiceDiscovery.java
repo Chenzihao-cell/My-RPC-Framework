@@ -14,6 +14,9 @@ import java.net.InetSocketAddress;
 import java.util.List;
 
 /**
+ * 服务发现
+ * 供服务使用侧使用
+ *
  * @author czihao
  */
 public class NacosServiceDiscovery implements ServiceDiscovery {
@@ -23,15 +26,21 @@ public class NacosServiceDiscovery implements ServiceDiscovery {
     private final LoadBalancer loadBalancer;
 
     public NacosServiceDiscovery(LoadBalancer loadBalancer) {
-        if(loadBalancer == null) this.loadBalancer = new RandomLoadBalancer();
+        if (loadBalancer == null) this.loadBalancer = new RandomLoadBalancer();
         else this.loadBalancer = loadBalancer;
     }
 
+    /**
+     * 根据服务名称查找服务所在的服务端（即服务提供侧）位置（即IP地址+端口号）
+     *
+     * @param serviceName 服务名称
+     * @return 服务实体所在的位置
+     */
     @Override
     public InetSocketAddress lookupService(String serviceName) {
         try {
             List<Instance> instances = NacosUtil.getAllInstance(serviceName);
-            if(instances.size() == 0) {
+            if (instances.size() == 0) {
                 logger.error("找不到对应的服务: " + serviceName);
                 throw new RpcException(RpcError.SERVICE_NOT_FOUND);
             }

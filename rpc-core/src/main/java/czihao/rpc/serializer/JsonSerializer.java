@@ -12,6 +12,7 @@ import java.io.IOException;
 
 /**
  * 使用JSON格式的序列化器
+ *
  * @author czihao
  */
 public class JsonSerializer implements CommonSerializer {
@@ -45,8 +46,8 @@ public class JsonSerializer implements CommonSerializer {
     }
 
     /*
-        这里由于使用JSON序列化和反序列化Object数组，无法保证反序列化后仍然为原实例类型
-        需要重新判断处理
+     *这里由于使用JSON序列化和反序列化Object数组，无法保证反序列化后仍然为原实例类型
+     *需要重新判断处理
      */
     private Object handleRequest(Object obj) throws IOException {
         RpcRequest rpcRequest = (RpcRequest) obj;

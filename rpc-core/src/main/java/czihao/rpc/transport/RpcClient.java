@@ -4,7 +4,8 @@ import czihao.rpc.entity.RpcRequest;
 import czihao.rpc.serializer.CommonSerializer;
 
 /**
- * 客户端类通用接口
+ * 服务消费侧（客户端）网络传输接口
+ * RpcClient的作用就是将一个rpcRequest发过去，并且接受返回的RpcResponse
  *
  * @author czihao
  */

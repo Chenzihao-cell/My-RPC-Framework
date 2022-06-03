@@ -7,8 +7,6 @@ import czihao.rpc.transport.netty.server.NettyServer;
 
 /**
  * 测试用Netty服务提供者（服务端）
- *
- * @author czihao
  */
 @ServiceScan
 public class NettyTestServer {

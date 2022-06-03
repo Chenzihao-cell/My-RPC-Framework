@@ -5,23 +5,28 @@ import java.util.Map;
 
 /**
  * 单例工厂
- * @author czihao
  */
 public class SingletonFactory {
 
     private static Map<Class, Object> objectMap = new HashMap<>();
 
-    private SingletonFactory() {}
+    private SingletonFactory() {
+    }
 
+    /**
+     * 双重检测实现单例创建
+     */
     public static <T> T getInstance(Class<T> clazz) {
         Object instance = objectMap.get(clazz);
-        synchronized (clazz) {
-            if(instance == null) {
-                try {
-                    instance = clazz.newInstance();
-                    objectMap.put(clazz, instance);
-                } catch (IllegalAccessException | InstantiationException e) {
-                    throw new RuntimeException(e.getMessage(), e);
+        if (instance == null) {
+            synchronized (clazz) {
+                if (instance == null) {
+                    try {
+                        instance = clazz.newInstance();
+                        objectMap.put(clazz, instance);
+                    } catch (IllegalAccessException | InstantiationException e) {
+                        throw new RuntimeException(e.getMessage(), e);
+                    }
                 }
             }
         }

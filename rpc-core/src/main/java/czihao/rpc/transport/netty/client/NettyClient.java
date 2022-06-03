@@ -24,7 +24,8 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * NIO方式消费侧客户端类
+ * 基于Netty实现的服务消费侧（客户端）网络传输类
+ * NettyClient的作用就是将一个rpcRequest发过去，并且接受返回的CompletableFuture<RpcResponse>
  *
  * @author czihao
  */
@@ -46,15 +47,6 @@ public class NettyClient implements RpcClient {
 
     private final UnprocessedRequests unprocessedRequests;
 
-    public NettyClient() {
-        this(DEFAULT_SERIALIZER, new RandomLoadBalancer());
-    }
-    public NettyClient(LoadBalancer loadBalancer) {
-        this(DEFAULT_SERIALIZER, loadBalancer);
-    }
-    public NettyClient(Integer serializer) {
-        this(serializer, new RandomLoadBalancer());
-    }
     public NettyClient(Integer serializer, LoadBalancer loadBalancer) {
         this.serviceDiscovery = new NacosServiceDiscovery(loadBalancer);
         this.serializer = CommonSerializer.getByCode(serializer);

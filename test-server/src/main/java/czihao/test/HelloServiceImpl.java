@@ -6,9 +6,6 @@ import czihao.rpc.annotation.Service;
 import czihao.rpc.api.HelloObject;
 import czihao.rpc.api.HelloService;
 
-/**
- * @author czihao
- */
 @Service
 public class HelloServiceImpl implements HelloService {
 

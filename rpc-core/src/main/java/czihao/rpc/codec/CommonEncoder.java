@@ -9,8 +9,6 @@ import io.netty.handler.codec.MessageToByteEncoder;
 
 /**
  * 通用的编码拦截器
- *
- * @author czihao
  */
 public class CommonEncoder extends MessageToByteEncoder {
 

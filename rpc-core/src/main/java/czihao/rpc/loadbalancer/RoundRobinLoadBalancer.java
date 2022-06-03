@@ -5,6 +5,8 @@ import com.alibaba.nacos.api.naming.pojo.Instance;
 import java.util.List;
 
 /**
+ * 轮询策略实现负载均衡
+ *
  * @author czihao
  */
 public class RoundRobinLoadBalancer implements LoadBalancer {
@@ -13,7 +15,7 @@ public class RoundRobinLoadBalancer implements LoadBalancer {
 
     @Override
     public Instance select(List<Instance> instances) {
-        if(index >= instances.size()) {
+        if (index >= instances.size()) {
             index %= instances.size();
         }
         return instances.get(index++);

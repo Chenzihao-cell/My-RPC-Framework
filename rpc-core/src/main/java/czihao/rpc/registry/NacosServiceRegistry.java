@@ -11,12 +11,17 @@ import java.net.InetSocketAddress;
 
 /**
  * Nacos服务注册中心
+ * 供服务提供者使用
+ *
  * @author czihao
  */
 public class NacosServiceRegistry implements ServiceRegistry {
 
     private static final Logger logger = LoggerFactory.getLogger(NacosServiceRegistry.class);
 
+    /*
+     * 仅在AbstractRpcServer.publishService(T service, String serviceName)这一处被调用过
+     * */
     @Override
     public void register(String serviceName, InetSocketAddress inetSocketAddress) {
         try {

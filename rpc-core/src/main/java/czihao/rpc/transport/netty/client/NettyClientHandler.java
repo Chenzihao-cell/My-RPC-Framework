@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.net.InetSocketAddress;
 
 /**
- * Netty客户端侧处理器
+ * Netty中处理RpcResponse的Handler
  *
  * @author czihao
  */
@@ -32,12 +32,13 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<RpcResponse>
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, RpcResponse msg) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, RpcResponse rpcResponse) throws Exception {
+        //在这里其实不需要显示的对资源msg（即rpcResponse）进行释放
         try {
-            logger.info(String.format("客户端接收到消息: %s", msg));
-            unprocessedRequests.complete(msg);
+            logger.info(String.format("客户端接收到消息: %s", rpcResponse));
+            unprocessedRequests.complete(rpcResponse);
         } finally {
-            ReferenceCountUtil.release(msg);
+            ReferenceCountUtil.release(rpcResponse);
         }
     }
 

@@ -6,7 +6,6 @@ import czihao.rpc.util.RpcMessageChecker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import czihao.rpc.transport.netty.client.NettyClient;
-import czihao.rpc.transport.socket.client.SocketClient;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -15,7 +14,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * RPC客户端动态代理
+ * RPC客户端动态代理（基于JDK动态代理实现）
  *
  * @author czihao
  */
@@ -53,9 +52,7 @@ public class RpcClientProxy implements InvocationHandler {
                 return null;
             }
         }
-        if (client instanceof SocketClient) {
-            rpcResponse = (RpcResponse) client.sendRequest(rpcRequest);
-        }
+
         RpcMessageChecker.check(rpcRequest, rpcResponse);
         return rpcResponse.getData();
     }

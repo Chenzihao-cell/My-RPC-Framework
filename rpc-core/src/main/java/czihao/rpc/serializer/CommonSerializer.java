@@ -12,7 +12,7 @@ public interface CommonSerializer {
     Integer HESSIAN_SERIALIZER = 2;
     Integer PROTOBUF_SERIALIZER = 3;
 
-    Integer DEFAULT_SERIALIZER = KRYO_SERIALIZER;
+    Integer DEFAULT_SERIALIZER = PROTOBUF_SERIALIZER;
 
     static CommonSerializer getByCode(int code) {
         switch (code) {

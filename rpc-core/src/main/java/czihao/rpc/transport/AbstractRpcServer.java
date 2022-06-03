@@ -21,7 +21,7 @@ public abstract class AbstractRpcServer implements RpcServer {
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /*
-     * host和port来指明服务端的位置
+     * host和port来指明服务端的位置（ip地址+端口号）
      * */
     protected String host;
     protected int port;
@@ -29,6 +29,11 @@ public abstract class AbstractRpcServer implements RpcServer {
     protected ServiceRegistry serviceRegistry;
     protected ServiceProvider serviceProvider;
 
+    /**
+     * 扫描服务提供侧所提供的所有服务，
+     * 并在该方法内通过迭代调用publishService(T service, String serviceName)方法，
+     * 把服务保存到serviceProvider和注册到serviceRegistry中
+     */
     public void scanServices() {
         String mainClassName = ReflectUtil.getStackTrace();
         Class<?> startClass;
@@ -69,6 +74,10 @@ public abstract class AbstractRpcServer implements RpcServer {
         }
     }
 
+    /*
+     * 发布服务
+     * 仅在AbstractRpcServer.scanServices()这一处被调用过
+     * */
     @Override
     public <T> void publishService(T service, String serviceName) {
         serviceProvider.addServiceProvider(service, serviceName);

@@ -13,8 +13,9 @@ import java.lang.reflect.Method;
 
 /**
  * 进行过程调用的处理器
+ * RequestHandler是一个单例类
  *
- * @author czihao
+ * @czihao
  */
 public class RequestHandler {
 
@@ -25,6 +26,10 @@ public class RequestHandler {
         serviceProvider = new ServiceProviderImpl();
     }
 
+    /*
+     * 仅在NettyServerHandler.channelRead0(ChannelHandlerContext ctx, RpcRequest msg)这一处
+     * 被调用过
+     * */
     public Object handle(RpcRequest rpcRequest) {
         Object service = serviceProvider.getServiceProvider(rpcRequest.getInterfaceName());
         return invokeTargetMethod(rpcRequest, service);

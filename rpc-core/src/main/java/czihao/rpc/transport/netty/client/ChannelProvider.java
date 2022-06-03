@@ -30,8 +30,17 @@ public class ChannelProvider {
     private static EventLoopGroup eventLoopGroup;
     private static Bootstrap bootstrap = initializeBootstrap();
 
+    /**
+     * key:服务所在的服务器地址（即服务提供侧地址）
+     * value:与服务提供侧地址网络通信的Channel
+     */
     private static Map<String, Channel> channels = new ConcurrentHashMap<>();
 
+    /*
+     * 仅在NettyClient.sendRequest(RpcRequest rpcRequest)和
+     * NettyClientHandler.userEventTriggered(ChannelHandlerContext ctx, Object evt)
+     * 这两处地方被调用过.
+     * */
     public static Channel get(InetSocketAddress inetSocketAddress, CommonSerializer serializer) throws InterruptedException {
         String key = inetSocketAddress.toString() + serializer.getCode();
         if (channels.containsKey(key)) {
@@ -57,7 +66,7 @@ public class ChannelProvider {
         try {
             channel = connect(bootstrap, inetSocketAddress);
         } catch (ExecutionException e) {
-            logger.error("连接客户端时有错误发生", e);
+            logger.error("连接服务端（即服务提供侧）时有错误发生", e);
             return null;
         }
         channels.put(key, channel);
@@ -68,7 +77,7 @@ public class ChannelProvider {
         CompletableFuture<Channel> completableFuture = new CompletableFuture<>();
         bootstrap.connect(inetSocketAddress).addListener((ChannelFutureListener) future -> {
             if (future.isSuccess()) {
-                logger.info("客户端连接成功!");
+                logger.info("连接服务端（即服务提供侧）成功!");
                 completableFuture.complete(future.channel());
             } else {
                 throw new IllegalStateException();

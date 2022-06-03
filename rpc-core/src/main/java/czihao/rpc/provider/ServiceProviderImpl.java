@@ -10,16 +10,21 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 默认的服务注册表，保存服务端本地服务
+ * 服务注册表，保存和查找服务端提供的本地服务实例对象
+ *
  * @author czihao
  */
 public class ServiceProviderImpl implements ServiceProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(ServiceProviderImpl.class);
 
+    //本项目中ConcurrentHashMap的应用
     private static final Map<String, Object> serviceMap = new ConcurrentHashMap<>();
     private static final Set<String> registeredService = ConcurrentHashMap.newKeySet();
 
+    /*
+     * 仅在AbstractRpcServer.publishService(T service, String serviceName)这一处被调用过
+     * */
     @Override
     public <T> void addServiceProvider(T service, String serviceName) {
         if (registeredService.contains(serviceName)) return;
@@ -28,6 +33,9 @@ public class ServiceProviderImpl implements ServiceProvider {
         logger.info("向接口: {} 注册服务: {}", service.getClass().getInterfaces(), serviceName);
     }
 
+    /*
+     * 仅在RequestHandler.handle(RpcRequest rpcRequest)这一处被调用过
+     * */
     @Override
     public Object getServiceProvider(String serviceName) {
         Object service = serviceMap.get(serviceName);

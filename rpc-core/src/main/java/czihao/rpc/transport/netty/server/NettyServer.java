@@ -19,7 +19,7 @@ import io.netty.handler.timeout.IdleStateHandler;
 import java.util.concurrent.TimeUnit;
 
 /**
- * NIO方式服务提供侧
+ * 服务提供侧
  *
  * @author czihao
  */
@@ -37,6 +37,11 @@ public class NettyServer extends AbstractRpcServer {
         serviceRegistry = new NacosServiceRegistry();
         serviceProvider = new ServiceProviderImpl();
         this.serializer = CommonSerializer.getByCode(serializer);
+
+        /*
+         * 在创建服务提供侧的时候，
+         * 通过NettyServer(String host, int port, Integer serializer)构造函数调用scanServices()
+         * */
         scanServices();
     }
 

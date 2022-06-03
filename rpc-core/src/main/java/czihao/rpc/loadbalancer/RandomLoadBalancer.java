@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Random;
 
 /**
+ * 随即策略实现负载均衡
+ *
  * @author czihao
  */
 public class RandomLoadBalancer implements LoadBalancer {

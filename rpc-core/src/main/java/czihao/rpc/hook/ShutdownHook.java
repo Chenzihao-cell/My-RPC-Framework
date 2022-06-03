@@ -1,6 +1,5 @@
 package czihao.rpc.hook;
 
-import czihao.rpc.factory.ThreadPoolFactory;
 import czihao.rpc.util.NacosUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +21,6 @@ public class ShutdownHook {
         logger.info("关闭后将自动注销所有服务");
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             NacosUtil.clearRegistry();
-            ThreadPoolFactory.shutDownAll();
         }));
     }
 

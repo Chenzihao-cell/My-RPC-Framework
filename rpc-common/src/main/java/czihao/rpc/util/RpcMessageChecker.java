@@ -10,16 +10,13 @@ import czihao.rpc.exception.RpcException;
 
 /**
  * 检查响应与请求
- *
- * @author czihao
  */
 public class RpcMessageChecker {
 
     public static final String INTERFACE_NAME = "interfaceName";
     private static final Logger logger = LoggerFactory.getLogger(RpcMessageChecker.class);
 
-    private RpcMessageChecker() {
-    }
+    private RpcMessageChecker() {}
 
     public static void check(RpcRequest rpcRequest, RpcResponse rpcResponse) {
         if (rpcResponse == null) {

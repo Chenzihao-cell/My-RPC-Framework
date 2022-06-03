@@ -7,11 +7,12 @@ import java.lang.annotation.Target;
 
 /**
  * 服务扫描的基包
+ *
  * @author czihao
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ServiceScan {
+public @interface ServiceScan {//功能类似于@ComponentScan注解
 
     public String value() default "";
 
