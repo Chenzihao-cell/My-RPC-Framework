@@ -12,12 +12,8 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+//思路来源于JavaGuide
 public class ReflectUtil {
-
-    public static String getStackTrace() {
-        StackTraceElement[] stack = new Throwable().getStackTrace();
-        return stack[stack.length - 1].getClassName();
-    }
 
     public static Set<Class<?>> getClasses(String packageName) {
         Set<Class<?>> classes = new LinkedHashSet<>();
@@ -103,6 +99,11 @@ public class ReflectUtil {
         }
 
         return classes;
+    }
+
+    public static String getStackTrace() {
+        StackTraceElement[] stack = new Throwable().getStackTrace();
+        return stack[stack.length - 1].getClassName();
     }
 
     private static void findAndAddClassesInPackageByFile(String packageName,

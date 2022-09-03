@@ -1,68 +1,78 @@
-# my-rpc-framework
+## 思路
 
-![jdk](https://img.shields.io/static/v1?label=oraclejdk&message=8&color=blue)
+RPC框架原理很简单，客户端和服务端都可以访问到通用的服务接口，但是只有服务端有这个服务接口的实现类，客户端调用这个接口的方式，是通过Netty网络传输，告诉服务端我要调用这个服务，
+服务端收到RpcRequest请求之后呢，就找到这个服务接口的实现类，然后执行具体的服务逻辑，将执行的结果放到RpcResponse中，通过Netty网络传输返回给客户端，作为客户端调用接口方法的返回值。
 
-my-rpc-framework 是一款基于 Nacos 实现的 RPC 框架。网络传输是基于Netty实现，并且实现了多种序列化与负载均衡算法。
+但是实现值得商榷，例如客户端怎么知道服务端的地址？客户端怎么告诉服务端我要调用的接口？客户端怎么传递参数？只有接口客户端怎么生成实现类……等等等等。
 
 ## 架构
 
-![系统架构](./images/architecture.png)
+![系统架构](architecture.png)
+![RPC框架思路](RPC框架思路.jpeg)
 
-消费者调用提供者的方式：Netty 方式，该步调用使用 NIO。如该调用有返回值，则提供者向消费者发送返回值的方式同理。
+## 通用的服务接口
 
-## 特性
+我们先把通用的服务接口写好，然后再来看怎么实现客户端和服务端。
 
-- 实现了基于 Netty 传输的网络传输方式
-- 实现了四种序列化算法，Json 方式、Kryo 算法、Hessian 算法与 Google Protobuf 方式（默认采用 Kryo方式序列化）
-- 实现了两种负载均衡算法：随机算法与轮转算法
-- 使用 Nacos 作为注册中心，管理服务提供者信息
-- 消费端如采用 Netty 方式，会复用 Channel 避免多次连接
-- 如消费端和提供者都采用 Netty 方式，会采用 Netty 的心跳机制，保证连接
-- 接口抽象良好，模块耦合度低，网络传输、序列化器、负载均衡算法可配置
-- 实现自定义的通信协议
-- 服务提供侧自动注册服务
-
-## 项目模块概览
-
-- **rpc-api**	——	通用接口
-- **rpc-common**	——	实体对象、工具类等公用类
-- **rpc-core**	——	框架的核心实现
-- **test-client**	——	测试用消费侧
-- **test-server**	——	测试用提供侧
-
-## 传输协议（MRF协议）
-
-调用参数与返回值的传输采用了如下 MRF 协议（ my-rpc-framework 首字母）以防止粘包：
-
-```
-+---------------+---------------+-----------------+-------------+
-|  Magic Number |  Package Type | Serializer Type | Data Length |
-|    4 bytes    |    4 bytes    |     4 bytes     |   4 bytes   |
-+---------------+---------------+-----------------+-------------+
-|                          Data Bytes                           |
-|                   Length: ${Data Length}                      |
-+---------------------------------------------------------------+
-```
-
-| 字段            | 解释                                                         |
-| :-------------- | :----------------------------------------------------------- |
-| Magic Number    | 魔数，标识一个 MRF 协议包，0xCAFEBABE                        |
-| Package Type    | 包类型，标明这是一个调用请求还是调用响应                     |
-| Serializer Type | 序列化器类型，标明这个包的数据的序列化方式                   |
-| Data Length     | 数据字节的长度                                               |
-| Data Bytes      | 传输的对象，通常是一个`RpcRequest`或`RpcClient`对象，取决于`Package Type`字段，对象的序列化方式取决于`Serializer Type`字段。 |
-
-## 使用
-
-### 定义调用接口
+接口如下：
 
 ```java
-package czihao.rpc.api;
-
 public interface HelloService {
-    String hello(String name);
+    String hello(HelloObject object);
 }
 ```
+
+hello方法需要传递一个对象，HelloObject对象，定义如下：
+
+```java
+
+@Data
+@AllArgsConstructor
+public class HelloObject implements Serializable {
+    private Integer id;
+    private String message;
+}
+```
+
+注意这个对象需要实现`Serializable`接口，因为它需要在调用过程中从客户端传递给服务端。
+
+接着我们在服务端对这个接口进行实现，实现的方式也很简单，返回一个字符串就行：
+
+```java
+public class HelloServiceImpl implements HelloService {
+    private static final Logger logger = LoggerFactory.getLogger(HelloServiceImpl.class);
+
+    @Override
+    public String hello(HelloObject object) {
+        logger.info("接收到：{}", object.getMessage());
+        return "这是调用的返回值，id=" + object.getId();
+    }
+}
+```
+
+## 传输协议
+
+严格来说，这并不能算是协议……但也大致算一个传输格式吧。
+
+我们来思考一下，服务端需要哪些信息，才能唯一确定服务端需要调用的接口的方法呢？
+
+首先，就是接口的名字，和方法的名字，但是由于方法重载的缘故，我们还需要这个方法的所有参数的类型，最后，客户端调用时，还需要传递参数的实际值，那么服务端知道以上四个条件，就可以找到这个方法并且调用了。我们把这四个条件写到一个对象里，到时候传输时传输这个对象就行了。即`RpcRequest`
+对象。
+
+参数类型我是直接使用Class对象，其实用字符串也是可以的。
+
+那么服务提供端调用完具体的服务实现类的方法后，需要给客户端返回哪些信息呢？如果调用成功的话，显然需要返回值，如果调用失败了，就需要失败的信息，这里封装成一个`RpcResponse`对象。
+RpcResponse中两个静态方法，可以用来快速生成成功与失败的响应对象。其中，statusCode属性可以自行定义，客户端服务端一致即可。
+
+## 客户端的实现——动态代理
+
+客户端方面，由于在客户端这一侧我们并没有接口的具体实现类，就没有办法直接生成实例对象。这时，我们可以通过动态代理的方式生成实例，在调用方法时生成需要的RpcRequest对象通过NettyClient发送给服务端。
+
+这里我们采用JDK动态代理，代理类实现了`InvocationHandler`接口。
+
+## 服务端的实现——利用Java反射机制来完成调用
+
+这里值得强调一下啊，服务提供侧可以注册任意多个服务到注册中心，即对外（服务消费者）提供任意多个服务。
 
 ### 在服务提供侧实现该接口
 
@@ -80,7 +90,7 @@ public class HelloServiceImpl implements HelloService {
 }
 ```
 
-### 编写服务提供者
+### 测试用基于Netty网络传输的服务提供者（服务端）
 
 ```java
 package czihao.test;
@@ -98,9 +108,7 @@ public class NettyTestServer {
 }
 ```
 
-这里，服务提供端基于 Netty 网络传输，并且指定序列化方式为 Google Protobuf 方式。
-
-### 在服务消费侧远程调用
+### 测试用基于Netty网络传输的服务消费者（客户端）
 
 ```java
 package czihao.test;
@@ -114,27 +122,23 @@ import NettyClient;
 public class NettyTestClient {
 
     public static void main(String[] args) {
-        RpcClient client = new NettyClient(CommonSerializer.KRYO_SERIALIZER, new RoundRobinLoadBalancer());
+        RpcClient client = new NettyClient(CommonSerializer.HESSIAN_SERIALIZER, new RandomLoadBalancer());
         RpcClientProxy rpcClientProxy = new RpcClientProxy(client);
+
         HelloService helloService = rpcClientProxy.getProxy(HelloService.class);
-        String res = helloService.hello("czihao");
+        HelloObject object = new HelloObject(12, "This is a message");
+        String res = helloService.hello(object);
         System.out.println(res);
+
+        ByeService byeService = rpcClientProxy.getProxy(ByeService.class);
+        System.out.println(byeService.bye("czihao"));
     }
+
 }
 ```
-
-这里,服务消费端也是基于 Netty 的网络传输方式，序列化方式采用 Kryo 方式，负载均衡策略指定为轮转方式。
 
 ### 启动
 
 在此之前要确保 Nacos 运行在本地 `8848` 端口。
 
-首先启动服务提供者，再启动消费者，在消费侧会输出`Hello, czihao`。
-
-## TODO
-
-- 配置文件
-
-## LICENSE
-
-my-rpc-framework is under the MIT license. See the [LICENSE](https://github.com/CN-GuoZiyang/my-rpc-framework/blob/master/LICENSE) file for details.
+首先启动服务提供者所在的服务端，再启动服务消费者。

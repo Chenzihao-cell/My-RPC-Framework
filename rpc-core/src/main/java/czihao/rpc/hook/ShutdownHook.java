@@ -13,10 +13,16 @@ public class ShutdownHook {
 
     private static final ShutdownHook shutdownHook = new ShutdownHook();
 
+    /*
+     * 仅在NettyServer.start()这一处被调用
+     * */
     public static ShutdownHook getShutdownHook() {
         return shutdownHook;
     }
 
+    /*
+     * 仅在NettyServer.start()这一处被调用
+     * */
     public void addClearAllHook() {
         logger.info("关闭后将自动注销所有服务");
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {

@@ -20,16 +20,10 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * 服务提供侧
- *
- * @author czihao
  */
 public class NettyServer extends AbstractRpcServer {
 
     private final CommonSerializer serializer;
-
-    public NettyServer(String host, int port) {
-        this(host, port, DEFAULT_SERIALIZER);
-    }
 
     public NettyServer(String host, int port, Integer serializer) {
         this.host = host;

@@ -21,8 +21,6 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * 用于获取 Channel 对象
- *
- * @author czihao
  */
 public class ChannelProvider {
 
@@ -31,8 +29,8 @@ public class ChannelProvider {
     private static Bootstrap bootstrap = initializeBootstrap();
 
     /**
-     * key:服务所在的服务器地址（即服务提供侧地址）
-     * value:与服务提供侧地址网络通信的Channel
+     * key:服务所在的服务端地址（即服务提供侧地址）
+     * value:与服务提供侧网络通信的Channel
      */
     private static Map<String, Channel> channels = new ConcurrentHashMap<>();
 
@@ -56,7 +54,8 @@ public class ChannelProvider {
             protected void initChannel(SocketChannel socketChannel) {
                 /*自定义序列化编解码器*/
                 // RpcResponse -> ByteBuf
-                socketChannel.pipeline().addLast(new CommonEncoder(serializer))
+                socketChannel.pipeline()
+                        .addLast(new CommonEncoder(serializer))
                         .addLast(new IdleStateHandler(0, 5, 0, TimeUnit.SECONDS))
                         .addLast(new CommonDecoder())
                         .addLast(new NettyClientHandler());

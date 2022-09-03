@@ -6,7 +6,6 @@ import czihao.rpc.enumeration.RpcError;
 import czihao.rpc.exception.RpcException;
 import czihao.rpc.factory.SingletonFactory;
 import czihao.rpc.loadbalancer.LoadBalancer;
-import czihao.rpc.loadbalancer.RandomLoadBalancer;
 import czihao.rpc.registry.NacosServiceDiscovery;
 import czihao.rpc.registry.ServiceDiscovery;
 import czihao.rpc.serializer.CommonSerializer;
@@ -26,8 +25,6 @@ import java.util.concurrent.CompletableFuture;
 /**
  * 基于Netty实现的服务消费侧（客户端）网络传输类
  * NettyClient的作用就是将一个rpcRequest发过去，并且接受返回的CompletableFuture<RpcResponse>
- *
- * @author czihao
  */
 public class NettyClient implements RpcClient {
 
@@ -53,6 +50,10 @@ public class NettyClient implements RpcClient {
         this.unprocessedRequests = SingletonFactory.getInstance(UnprocessedRequests.class);
     }
 
+    /*
+     * 仅在RpcClientProxy.invoke(Object proxy, Method method, Object[] args)
+     * 这一处被调用.
+     * */
     @Override
     public CompletableFuture<RpcResponse> sendRequest(RpcRequest rpcRequest) {
         if (serializer == null) {

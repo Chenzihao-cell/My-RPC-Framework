@@ -2,8 +2,7 @@ package czihao.rpc.serializer;
 
 /**
  * 通用的序列化反序列化接口
- *
- * @author czihao
+ * 注：序列化和反序列化的对象都是RpcRequest或RpcResponse
  */
 public interface CommonSerializer {
 

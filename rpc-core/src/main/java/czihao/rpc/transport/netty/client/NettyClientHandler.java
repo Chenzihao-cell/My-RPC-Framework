@@ -18,8 +18,6 @@ import java.net.InetSocketAddress;
 
 /**
  * Netty中处理RpcResponse的Handler
- *
- * @author czihao
  */
 public class NettyClientHandler extends SimpleChannelInboundHandler<RpcResponse> {
 

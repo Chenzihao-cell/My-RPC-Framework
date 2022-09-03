@@ -15,8 +15,6 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * RPC客户端动态代理（基于JDK动态代理实现）
- *
- * @author czihao
  */
 public class RpcClientProxy implements InvocationHandler {
 
@@ -43,14 +41,12 @@ public class RpcClientProxy implements InvocationHandler {
         RpcRequest rpcRequest = new RpcRequest(UUID.randomUUID().toString(), method.getDeclaringClass().getName(),
                 method.getName(), args, method.getParameterTypes(), false);
         RpcResponse rpcResponse = null;
-        if (client instanceof NettyClient) {
-            try {
-                CompletableFuture<RpcResponse> completableFuture = (CompletableFuture<RpcResponse>) client.sendRequest(rpcRequest);
-                rpcResponse = completableFuture.get();
-            } catch (Exception e) {
-                logger.error("方法调用请求发送失败", e);
-                return null;
-            }
+        try {
+            CompletableFuture<RpcResponse> completableFuture = (CompletableFuture<RpcResponse>) client.sendRequest(rpcRequest);
+            rpcResponse = completableFuture.get();
+        } catch (Exception e) {
+            logger.error("方法调用请求发送失败", e);
+            return null;
         }
 
         RpcMessageChecker.check(rpcRequest, rpcResponse);

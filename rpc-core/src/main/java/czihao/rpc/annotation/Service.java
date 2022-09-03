@@ -7,7 +7,6 @@ import java.lang.annotation.Target;
 
 /**
  * 表示一个服务提供类，用于注解远程接口的实现类
- * @author czihao
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

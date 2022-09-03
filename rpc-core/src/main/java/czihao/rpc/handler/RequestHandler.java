@@ -14,8 +14,6 @@ import java.lang.reflect.Method;
 /**
  * 进行过程调用的处理器
  * RequestHandler是一个单例类
- *
- * @czihao
  */
 public class RequestHandler {
 
@@ -35,6 +33,7 @@ public class RequestHandler {
         return invokeTargetMethod(rpcRequest, service);
     }
 
+    //利用反射语法调用目标方法
     private Object invokeTargetMethod(RpcRequest rpcRequest, Object service) {
         Object result;
         try {

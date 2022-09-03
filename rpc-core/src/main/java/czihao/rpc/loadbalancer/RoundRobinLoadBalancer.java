@@ -6,8 +6,6 @@ import java.util.List;
 
 /**
  * 轮询策略实现负载均衡
- *
- * @author czihao
  */
 public class RoundRobinLoadBalancer implements LoadBalancer {
 

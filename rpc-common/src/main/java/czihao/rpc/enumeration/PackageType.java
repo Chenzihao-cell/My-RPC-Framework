@@ -3,9 +3,6 @@ package czihao.rpc.enumeration;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-/**
- * @author czihao
- */
 @AllArgsConstructor
 @Getter
 public enum PackageType {

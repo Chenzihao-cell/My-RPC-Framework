@@ -15,9 +15,7 @@ import java.util.List;
 
 /**
  * 服务发现
- * 供服务使用侧使用
- *
- * @author czihao
+ * 供服务使用侧（客户端）使用
  */
 public class NacosServiceDiscovery implements ServiceDiscovery {
 
@@ -31,10 +29,10 @@ public class NacosServiceDiscovery implements ServiceDiscovery {
     }
 
     /**
-     * 根据服务名称查找服务所在的服务端（即服务提供侧）位置（即IP地址+端口号）
+     * 根据服务名称查找该服务所在的服务端（即服务提供侧）地址（即IP地址+端口号）
      *
      * @param serviceName 服务名称
-     * @return 服务实体所在的位置
+     * @return 服务实体所在的地址
      */
     @Override
     public InetSocketAddress lookupService(String serviceName) {

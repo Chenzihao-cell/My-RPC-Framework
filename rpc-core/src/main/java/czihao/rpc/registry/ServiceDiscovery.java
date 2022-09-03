@@ -9,10 +9,10 @@ import java.net.InetSocketAddress;
 public interface ServiceDiscovery {
 
     /**
-     * 根据服务名称查找服务实体所在的位置（即IP地址+端口号）
+     * 根据服务名称查找该服务所在的服务端（即服务提供侧）地址（即IP地址+端口号）
      *
      * @param serviceName 服务名称
-     * @return 服务实体所在的位置
+     * @return 服务实体所在的地址
      */
     InetSocketAddress lookupService(String serviceName);
 

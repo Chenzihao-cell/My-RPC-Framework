@@ -10,9 +10,6 @@ public class SingletonFactory {
 
     private static Map<Class, Object> objectMap = new HashMap<>();
 
-    private SingletonFactory() {
-    }
-
     /**
      * 双重检测实现单例创建
      */

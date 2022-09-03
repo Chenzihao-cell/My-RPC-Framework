@@ -6,9 +6,6 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
-/**
- * 测试用api的实体
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

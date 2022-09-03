@@ -9,15 +9,16 @@ import czihao.rpc.enumeration.RpcError;
 import czihao.rpc.exception.RpcException;
 
 /**
- * 检查响应与请求
+ * 检查响应与请求的工具类
  */
 public class RpcMessageChecker {
 
     public static final String INTERFACE_NAME = "interfaceName";
     private static final Logger logger = LoggerFactory.getLogger(RpcMessageChecker.class);
 
-    private RpcMessageChecker() {}
-
+    /*
+     * 仅在RpcClientProxy.invoke(Object proxy, Method method, Object[] args)这一处被调用过
+     * */
     public static void check(RpcRequest rpcRequest, RpcResponse rpcResponse) {
         if (rpcResponse == null) {
             logger.error("调用服务失败,serviceName:{}", rpcRequest.getInterfaceName());

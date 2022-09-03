@@ -12,8 +12,6 @@ import java.net.InetSocketAddress;
 /**
  * Nacos服务注册中心
  * 供服务提供者使用
- *
- * @author czihao
  */
 public class NacosServiceRegistry implements ServiceRegistry {
 
